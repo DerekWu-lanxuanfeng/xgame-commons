@@ -17,6 +17,8 @@ public abstract class DataShardingBase {
     private long updateTimes;
     private long deleteTimes;
 
+    protected DataShardingBase(){}
+
     public DataShardingBase(Short dbNum, Short tableNum) {
         this.dbNum = dbNum;
         this.tableNum = tableNum;
@@ -26,7 +28,7 @@ public abstract class DataShardingBase {
      * 子类实现
      * @return
      */
-    abstract Object id();
+    public abstract Object id();
 
     public Short getDbNum() {
         return dbNum;
@@ -44,7 +46,7 @@ public abstract class DataShardingBase {
         this.tableNum = tableNum;
     }
 
-    public int getTableFullNum() {
+    public Integer getTableFullNum() {
         return DataShardingUtils.getTableFullNum(dbNum, tableNum);
     }
 

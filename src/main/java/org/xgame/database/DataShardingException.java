@@ -8,6 +8,8 @@ package org.xgame.database;
  */
 public class DataShardingException extends RuntimeException {
 
+    private static final long serialVersionUID = 3422376234392624886L;
+
     public DataShardingException() {
         super();
     }

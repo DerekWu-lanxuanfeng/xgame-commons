@@ -33,8 +33,8 @@ public interface IMultiDataSourceBaseDAO {
 
     <T> T selectObj(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<T> paramClass);
 
-    <T extends DataShardingBase> List<T> selectList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<T> paramClass);
+    <E extends DataShardingBase> List<E> selectList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<E> paramClass);
 
-    <T> List<T> selectObjList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<T> paramClass);
+    <E> List<E> selectObjList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<E> paramClass);
     
 }

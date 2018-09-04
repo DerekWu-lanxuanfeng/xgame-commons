@@ -1,5 +1,6 @@
 package org.xgame.commons.security;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xgame.commons.reflect.ReflectUtils;
@@ -16,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Encryptor {
 
-    private static final Logger LOG = LogManager.getLogger(ReflectUtils.class);
+    private static final Logger LOG = LogManager.getLogger(Encryptor.class);
 
     /**
      * 字符串转换成十六进制字符串
@@ -121,6 +122,8 @@ public class Encryptor {
     }
 
     public static void main(String[] args) {
+
+//        StringUtils.split();
         String key = "1234567890123456"; // 128 bit key
         String initVector = "0000000000000000"; // 16 bytes IV
 

@@ -1,7 +1,5 @@
 package org.xgame.database.mybatis;
 
-import org.xgame.database.DataShardingBase;
-
 /**
  * @Name: Statements.class
  * @Description: //
@@ -15,7 +13,7 @@ public class Statements {
     private String deleteStatement;
     private String selectOneStatement;
 
-    private <T extends DataShardingBase> Statements(String namespace, Class<T> t) {
+    private Statements(String namespace, Class t) {
         String className = t.getSimpleName();
         this.insertStatement = (namespace + ".insert" + className);
         this.updateStatement = (namespace + ".update" + className);
@@ -23,11 +21,11 @@ public class Statements {
         this.selectOneStatement = (namespace + ".selectOne" + className + "ById");
     }
 
-    public static <T extends DataShardingBase> Statements instance(Class<T> t) {
+    public static Statements instance(Class t) {
         return new Statements(t.getSimpleName(), t);
     }
 
-    public static <T extends DataShardingBase> Statements instance(String namespace, Class<T> t) {
+    public static Statements instance(String namespace, Class t) {
         return new Statements(namespace, t);
     }
 

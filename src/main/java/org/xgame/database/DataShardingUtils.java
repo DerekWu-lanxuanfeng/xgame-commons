@@ -14,8 +14,8 @@ public class DataShardingUtils {
      * @param tableNum 1-9999
      * @return
      */
-    public static int getTableFullNum(short dbNum, short tableNum){
-        return dbNum * 10000 + tableNum;
+    public static Integer getTableFullNum(Short dbNum, Short tableNum){
+        return dbNum.shortValue() * 10000 + tableNum.shortValue();
     }
 
 }

@@ -10,6 +10,7 @@ import org.xgame.database.mybatis.Statements;
 import org.xgame.database.mybatis.StatementsManager;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,51 +31,118 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
 
     private StatementsManager statementsManager;
 
+    /**
+     * 关闭
+     * @param sqlSession
+     * @param connection
+     */
+    private void close(SqlSession sqlSession, Connection connection) {
+        if (sqlSession != null) {
+            sqlSession.close();
+        }
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.error(e);
+            }
+        }
+    }
+
     @Override
     public int insert(DataShardingBase dataShardingBase) {
         Statements statements = statementsManager.get(dataShardingBase.getClass());
-        Connection connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.insert(statements.getInsertStatement(), dataShardingBase);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.insert(statements.getInsertStatement(), dataShardingBase);
+        } catch (Exception e) {
+            LOG.error("# insert "+ dataShardingBase.getClass().getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return 0;
     }
 
     @Override
     public int update(DataShardingBase dataShardingBase) {
         Statements statements = statementsManager.get(dataShardingBase.getClass());
-        Connection connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.update(statements.getUpdateStatement(), dataShardingBase);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.update(statements.getUpdateStatement(), dataShardingBase);
+        } catch (Exception e) {
+            LOG.error("# update "+ dataShardingBase.getClass().getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return 0;
     }
 
     @Override
     public int update(Short dbNum, Short tableNum, String statement, Map<String, Object> param) {
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.update(statement, param);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.update(statement, param);
+        } catch (Exception e) {
+            LOG.error("# update statement error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return 0;
     }
 
     @Override
     public int delete(DataShardingBase dataShardingBase) {
         Statements statements = statementsManager.get(dataShardingBase.getClass());
-        Connection connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.delete(statements.getDeleteStatement(), dataShardingBase);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dataShardingBase.getDbNum());
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.delete(statements.getDeleteStatement(), dataShardingBase);
+        } catch (Exception e) {
+            LOG.error("# delete "+ dataShardingBase.getClass().getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return 0;
     }
 
     @Override
     public int delete(Short dbNum, Short tableNum, String statement, Map<String, Object> param) {
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.delete(statement, param);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.delete(statement, param);
+        } catch (Exception e) {
+            LOG.error("# delete statement error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return 0;
     }
 
     @Override
     public void batchDump(Short dbNum, List<DataShardingBase> dataShardingBaseList, DumpStat dumpStat) {
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
+        Connection connection = null;
         SqlSession sqlSession = null;
         try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            connection.setAutoCommit(false); // 不自动提交
             sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, connection);
             for (DataShardingBase dataShardingBase : dataShardingBaseList) {
                 Statements statements = statementsManager.get(dataShardingBase.getClass());
@@ -90,12 +158,21 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
                     if (dumpStat != null ) dumpStat.deleteIncr();
                 }
             }
-            sqlSession.commit();
+            sqlSession.commit(); // 提交
         } catch (Exception e) {
             LOG.error("# batchDump err dbNum=" + dbNum, e);
-            if (sqlSession != null) sqlSession.rollback();
+            if (sqlSession != null) {
+                sqlSession.rollback();
+            }
         } finally {
-            if (sqlSession != null) sqlSession.close();
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true); // 设置回自动提交
+                }
+            } catch (SQLException e2) {
+                LOG.error(e2);
+            }
+            this.close(sqlSession, connection);
         }
     }
 
@@ -125,23 +202,34 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
         Statements statements = statementsManager.get(clazz);
         Map<String, Object> param = new HashMap<>();
         param.put("id", id);
+        param.put("tableNum", tableNum);
         return selectOne(dbNum, tableNum, statements.getSelectOneStatement(), param, clazz);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends DataShardingBase> T selectOne(Short dbNum, Short tableNum, String statement, Map<String, Object> param, Class<T> clazz) {
+        param.put("tableNum", tableNum);
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        Object obj = sqlSession.selectOne(statement, param);
-        if (obj == null) {
-            return null;
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            Object obj = sqlSession.selectOne(statement, param);
+            if (obj == null) {
+                return null;
+            }
+            T oneDataShardingBase = (T) obj;
+            oneDataShardingBase.setDbNum(dbNum);
+            oneDataShardingBase.setTableNum(tableNum);
+            return oneDataShardingBase;
+        } catch (Exception e) {
+            LOG.error("# selectOne "+ clazz.getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
         }
-        T oneDataShardingBase = (T) obj;
-        oneDataShardingBase.setDbNum(dbNum);
-        oneDataShardingBase.setTableNum(tableNum);
-        return oneDataShardingBase;
+        return null;
     }
 
     @Override
@@ -149,9 +237,18 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
         param.put("dbNum", dbNum);
         param.put("tableNum", tableNum);
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.selectOne(statement, param);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.selectOne(statement, param);
+        } catch (Exception e) {
+            LOG.error("# selectOne "+ clazz.getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return null;
     }
 
     @Override
@@ -159,24 +256,42 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
         param.put("dbNum", dbNum);
         param.put("tableNum", tableNum);
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        List<E> list = sqlSession.selectList(statement, param);
-        for (DataShardingBase oneDataShardingBase : list) {
-            oneDataShardingBase.setDbNum(dbNum);
-            oneDataShardingBase.setTableNum(tableNum);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            List<E> list = sqlSession.selectList(statement, param);
+            for (DataShardingBase oneDataShardingBase : list) {
+                oneDataShardingBase.setDbNum(dbNum);
+                oneDataShardingBase.setTableNum(tableNum);
+            }
+            return list;
+        } catch (Exception e) {
+            LOG.error("# selectList "+ clazz.getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
         }
-        return list;
+        return null;
     }
 
     @Override
-    public <T> List<T> selectObjList(Short dbNum, Short tableNum, String statement, Map<String, Object> param, Class<T> clazz) {
+    public <E> List<E> selectObjList(Short dbNum, Short tableNum, String statement, Map<String, Object> param, Class<E> clazz) {
         param.put("dbNum", dbNum);
         param.put("tableNum", tableNum);
         param.put("tableFullNum", DataShardingUtils.getTableFullNum(dbNum, tableNum));
-        Connection connection = multiDataSourceManager.getConnection(dbNum);
-        SqlSession sqlSession = sqlSessionFactory.openSession(connection);
-        return sqlSession.selectList(statement, param);
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.selectList(statement, param);
+        } catch (Exception e) {
+            LOG.error("# selectList "+ clazz.getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return null;
     }
 
     public SqlSessionFactory getSqlSessionFactory() {
