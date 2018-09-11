@@ -253,6 +253,7 @@ public class DateUtil {
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -274,6 +275,7 @@ public class DateUtil {
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -296,6 +298,7 @@ public class DateUtil {
         cal.set(Calendar.SECOND, seconds);
         cal.setFirstDayOfWeek(Calendar.MONDAY);
         cal.set(Calendar.DAY_OF_WEEK, week + 1);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -317,6 +320,7 @@ public class DateUtil {
         cal.set(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, seconds);
         cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -339,6 +343,7 @@ public class DateUtil {
         cal.set(Calendar.SECOND, seconds);
         cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -632,6 +637,7 @@ public class DateUtil {
     public static java.util.Date getCurrentMonthFirstUtilDate() {
         Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 01, 00, 00, 00);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -644,6 +650,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH), 00, 00, 00);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -656,6 +663,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -782,6 +790,7 @@ public class DateUtil {
         caled.set(java.util.Calendar.HOUR_OF_DAY, 0);
         caled.set(java.util.Calendar.MINUTE, 0);
         caled.set(java.util.Calendar.SECOND, 0);
+        caled.set(Calendar.MILLISECOND, 0);
         return caled.getTime();
     }
 
@@ -797,6 +806,7 @@ public class DateUtil {
         caled.set(java.util.Calendar.HOUR_OF_DAY, 23);
         caled.set(java.util.Calendar.MINUTE, 59);
         caled.set(java.util.Calendar.SECOND, 59);
+        caled.set(Calendar.MILLISECOND, 0);
         return caled.getTime();
     }
 
@@ -992,6 +1002,7 @@ public class DateUtil {
         gc.set(Calendar.HOUR_OF_DAY, 0);
         gc.set(Calendar.MINUTE, 0);
         gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
         return gc.getTime();
     }
 
@@ -1018,6 +1029,7 @@ public class DateUtil {
         gc.set(Calendar.HOUR_OF_DAY, 0);
         gc.set(Calendar.MINUTE, 0);
         gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
         return gc.getTime();
     }
 
@@ -1031,6 +1043,7 @@ public class DateUtil {
         gc.set(Calendar.HOUR_OF_DAY, 23);
         gc.set(Calendar.MINUTE, 59);
         gc.set(Calendar.SECOND, 59);
+        gc.set(Calendar.MILLISECOND, 0);
         return gc.getTime();
     }
 
@@ -1045,6 +1058,7 @@ public class DateUtil {
         gc.set(Calendar.HOUR_OF_DAY, 23);
         gc.set(Calendar.MINUTE, 59);
         gc.set(Calendar.SECOND, 59);
+        gc.set(Calendar.MILLISECOND, 0);
         return gc.getTime();
     }
 
@@ -1091,6 +1105,7 @@ public class DateUtil {
         cal.setTime(getCurrentUtilDate());
         cal.add(Calendar.MINUTE, minute);
         cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -1193,6 +1208,7 @@ public class DateUtil {
         c.setTime(date);
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH), 00, 00, 00);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -1206,6 +1222,7 @@ public class DateUtil {
         c.setTime(date);
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -1261,6 +1278,7 @@ public class DateUtil {
         long a = c.getTimeInMillis();
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH) + datePos, 23, 59, 59);
+        c.set(Calendar.MILLISECOND, 0);
         LOG.debug("c:" + c.toString());
         long b = c.getTimeInMillis();
         return (int) ((b - a) / 1000);
@@ -1286,6 +1304,7 @@ public class DateUtil {
         caled.set(java.util.Calendar.HOUR_OF_DAY, 0);
         caled.set(java.util.Calendar.MINUTE, 0);
         caled.set(java.util.Calendar.SECOND, 0);
+        caled.set(Calendar.MILLISECOND, 0);
         // 得到两个日期相差的天数
         int days = ((int) (caled.getTime().getTime() / 1000) - (int) (calst
                 .getTime().getTime() / 1000)) / 3600 / 24;
@@ -1302,6 +1321,7 @@ public class DateUtil {
         caled.set(java.util.Calendar.HOUR_OF_DAY, 0);
         caled.set(java.util.Calendar.MINUTE, 0);
         caled.set(java.util.Calendar.SECOND, 0);
+        caled.set(Calendar.MILLISECOND, 0);
         return caled.getTime();
     }
 
