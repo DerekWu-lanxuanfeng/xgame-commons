@@ -34,7 +34,7 @@ public abstract class DataShardingBase {
         return dbNum;
     }
 
-    void setDbNum(Short dbNum) {
+    public void setDbNum(Short dbNum) {
         this.dbNum = dbNum;
     }
 
@@ -42,7 +42,7 @@ public abstract class DataShardingBase {
         return tableNum;
     }
 
-    void setTableNum(Short tableNum) {
+    public void setTableNum(Short tableNum) {
         this.tableNum = tableNum;
     }
 

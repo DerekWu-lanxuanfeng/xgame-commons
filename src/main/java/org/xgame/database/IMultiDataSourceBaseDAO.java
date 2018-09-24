@@ -23,9 +23,9 @@ public interface IMultiDataSourceBaseDAO {
 
     int delete(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap);
 
-    void batchDump(Short dbNum, List<DataShardingBase> dataShardingBaseList, DumpStat dumpStat);
+    <T extends DataShardingBase> void batchDump(Short dbNum, List<T> dataShardingBaseList, DumpStat dumpStat);
 
-    void batchDump(Map<Short, List<DataShardingBase>> paramMap, Map<Short, DumpStat> dumpStatMap);
+    <T extends DataShardingBase> void batchDump(Map<Short, List<T>> paramMap, Map<Short, DumpStat> dumpStatMap);
 
     <T extends DataShardingBase> T selectOne(Short dbNum, Short tableNum, Object id, Class<T> paramClass);
 
@@ -36,5 +36,7 @@ public interface IMultiDataSourceBaseDAO {
     <E extends DataShardingBase> List<E> selectList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<E> paramClass);
 
     <E> List<E> selectObjList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<E> paramClass);
+
+    <E> List<E> selectObjListByCustomQueryParam(Short dbNum, String statement, Object paramObj, Class<E> paramClass);
     
 }

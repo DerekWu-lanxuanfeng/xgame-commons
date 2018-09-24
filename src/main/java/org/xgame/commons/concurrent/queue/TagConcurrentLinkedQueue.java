@@ -71,4 +71,21 @@ public class TagConcurrentLinkedQueue<E> {
     public void setLastUseTimes(long lastUseTimes) {
         this.lastUseTimes = lastUseTimes;
     }
+
+    public long getMaxUseTimes() {
+        return maxUseTimes;
+    }
+
+    public void setMaxUseTimes(long maxUseTimes) {
+        this.maxUseTimes = maxUseTimes;
+    }
+
+    public boolean isEmpty() {
+        return linkedQueue.isEmpty();
+    }
+
+    public void useOver() {
+        this.inUseLock.set(false);
+    }
+
 }

@@ -33,6 +33,10 @@ public class DumpStat {
         return deleteCount;
     }
 
+    public int getTotalCount() {
+        return insertCount + updateCount + deleteCount;
+    }
+
     public void reset() {
         insertCount = 0;
         updateCount = 0;

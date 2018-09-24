@@ -137,7 +137,7 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
     }
 
     @Override
-    public void batchDump(Short dbNum, List<DataShardingBase> dataShardingBaseList, DumpStat dumpStat) {
+    public <T extends DataShardingBase> void batchDump(Short dbNum, List<T> dataShardingBaseList, DumpStat dumpStat) {
         Connection connection = null;
         SqlSession sqlSession = null;
         try {
@@ -177,11 +177,11 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
     }
 
     @Override
-    public void batchDump(Map<Short, List<DataShardingBase>> dbMapList, Map<Short, DumpStat> dumpStatMap) {
-        for (Map.Entry<Short, List<DataShardingBase>> oneEntry : dbMapList.entrySet()) {
+    public <T extends DataShardingBase> void batchDump(Map<Short, List<T>> dbMapList, Map<Short, DumpStat> dumpStatMap) {
+        for (Map.Entry<Short, List<T>> oneEntry : dbMapList.entrySet()) {
             Short dbNum = oneEntry.getKey();
 
-            List<DataShardingBase> dataShardingBaseList = oneEntry.getValue();
+            List<T> dataShardingBaseList = oneEntry.getValue();
 
             //dump 统计
             DumpStat dumpStat = null;
@@ -288,6 +288,22 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
             return sqlSession.selectList(statement, param);
         } catch (Exception e) {
             LOG.error("# selectList "+ clazz.getSimpleName() +" error.", e);
+        } finally {
+            this.close(sqlSession, connection);
+        }
+        return null;
+    }
+
+    @Override
+    public <E> List<E> selectObjListByCustomQueryParam(Short dbNum, String statement, Object paramObj, Class<E> paramClass) {
+        Connection connection = null;
+        SqlSession sqlSession = null;
+        try {
+            connection = multiDataSourceManager.getConnection(dbNum);
+            sqlSession = sqlSessionFactory.openSession(connection);
+            return sqlSession.selectList(statement, paramObj);
+        } catch (Exception e) {
+            LOG.error("# selectObjListByCustomQueryParam "+ paramClass.getSimpleName() +" error.", e);
         } finally {
             this.close(sqlSession, connection);
         }

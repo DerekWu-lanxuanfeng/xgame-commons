@@ -64,6 +64,7 @@ public class DateUtil {
         TIME_DEF_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
         Calendar c = Calendar.getInstance();
         c.set(1970, 0, 1, 0, 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
         DEF_DATE = c.getTime();
         try {
             SRC_TIME = new SimpleDateFormat("yyyyMMdd").parse("19700101")
