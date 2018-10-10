@@ -8,7 +8,7 @@ package org.xgame.global.system;
  */
 public enum SystemStateEnum {
 
-    STOP, // 停止状态
+//    STOP, // 停止状态
     STARTING, // 启动中
     RUNNING, // 运行中
     STOPPING // 停止中，停止有一个过程

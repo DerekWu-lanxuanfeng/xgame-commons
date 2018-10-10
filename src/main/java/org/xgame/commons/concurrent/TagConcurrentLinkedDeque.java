@@ -1,20 +1,21 @@
-package org.xgame.commons.concurrent.queue;
+package org.xgame.commons.concurrent;
 
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @Name: TagConcurrentLinkedQueue.class
+ * @Name: TagConcurrentLinkedDeque.class
  * @Description: // 标记同步链表队列
  * @Create: DerekWu on 2018/8/27 23:30
  * @Version: V1.0
  */
-public class TagConcurrentLinkedQueue<E> {
+public class TagConcurrentLinkedDeque<E> {
 
     /** 标记 */
     private String tag;
     /** 同步链表队列 */
-    private ConcurrentLinkedQueue<E> linkedQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedDeque<E> linkedDeque = new ConcurrentLinkedDeque<>();
 
     /** 使用中的锁 */
     private AtomicBoolean inUseLock = new AtomicBoolean(false);
@@ -27,7 +28,7 @@ public class TagConcurrentLinkedQueue<E> {
      * 申请使用队列，返回申请成功或者失败
      * @return
      */
-    public boolean applyUseQueue() {
+    public boolean applyUseDeque() {
         if (!inUseLock.get() || System.currentTimeMillis() > lastUseTimes + maxUseTimes) {
             // 只能一个线城上锁成功
             boolean isLocked = inUseLock.compareAndSet(false, true);
@@ -40,20 +41,37 @@ public class TagConcurrentLinkedQueue<E> {
     }
 
     /**
-     * 添加到队列
+     * 添加到队列尾部
      * @param e
      * @return
      */
-    public boolean add(E e) {
-        return this.linkedQueue.offer(e);
+    public boolean addLast(E e) {
+        return this.linkedDeque.offerLast(e);
+    }
+
+    /**
+     * 添加到队列头部
+     * @param e
+     * @return
+     */
+    public boolean addFirst(E e) {
+        return this.linkedDeque.offerFirst(e);
     }
 
     /**
      * 队列队列的头部取出一个
      * @return 队列为空则返回 null
      */
-    public E poll() {
-        return this.linkedQueue.poll();
+    public E pollFirst() {
+        return this.linkedDeque.pollFirst();
+    }
+
+    /**
+     * 队列队列的尾部取出一个
+     * @return 队列为空则返回 null
+     */
+    public E pollLast() {
+        return this.linkedDeque.pollLast();
     }
 
     public String getTag() {
@@ -81,7 +99,7 @@ public class TagConcurrentLinkedQueue<E> {
     }
 
     public boolean isEmpty() {
-        return linkedQueue.isEmpty();
+        return linkedDeque.isEmpty();
     }
 
     public void useOver() {

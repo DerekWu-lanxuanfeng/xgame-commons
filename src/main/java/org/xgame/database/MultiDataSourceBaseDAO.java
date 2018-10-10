@@ -147,14 +147,26 @@ public class MultiDataSourceBaseDAO implements IMultiDataSourceBaseDAO {
             for (DataShardingBase dataShardingBase : dataShardingBaseList) {
                 Statements statements = statementsManager.get(dataShardingBase.getClass());
                 if ((dataShardingBase.getInsertTimes() > 0L) && (dataShardingBase.getDeleteTimes() == 0L)) {
-                    sqlSession.insert(statements.getInsertStatement(), dataShardingBase);
+                    String insertStatement = dataShardingBase.getInsertStatement();
+                    if (insertStatement == null) {
+                        insertStatement = statements.getInsertStatement();
+                    }
+                    sqlSession.insert(insertStatement, dataShardingBase);
                     dataShardingBase.processInsertOver();
                     if (dumpStat != null ) dumpStat.insertIncr();
                 } else if ((dataShardingBase.getUpdateTimes() > 0L) && (dataShardingBase.getInsertTimes() == 0L) && (dataShardingBase.getDeleteTimes() == 0L)) {
-                    sqlSession.update(statements.getUpdateStatement(), dataShardingBase);
+                    String updateStatement = dataShardingBase.getUpdateStatement();
+                    if (updateStatement == null) {
+                        updateStatement = statements.getUpdateStatement();
+                    }
+                    sqlSession.update(updateStatement, dataShardingBase);
                     if (dumpStat != null ) dumpStat.updateIncr();
                 } else if ((dataShardingBase.getInsertTimes() == 0L) && dataShardingBase.getDeleteTimes() > 0L) {
-                    sqlSession.delete(statements.getDeleteStatement(), dataShardingBase);
+                    String deleteStatement = dataShardingBase.getDeleteStatement();
+                    if (deleteStatement == null) {
+                        deleteStatement = statements.getDeleteStatement();
+                    }
+                    sqlSession.delete(deleteStatement, dataShardingBase);
                     if (dumpStat != null ) dumpStat.deleteIncr();
                 }
             }

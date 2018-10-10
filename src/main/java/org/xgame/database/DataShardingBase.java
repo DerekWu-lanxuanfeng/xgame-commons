@@ -17,6 +17,11 @@ public abstract class DataShardingBase {
     private long updateTimes;
     private long deleteTimes;
 
+    /** 批量 插入、修改、删除 时使用 的statement，如果没有则使用默认的 */
+    private String insertStatement;
+    private String updateStatement;
+    private String deleteStatement;
+
     protected DataShardingBase(){}
 
     public DataShardingBase(Short dbNum, Short tableNum) {
@@ -94,5 +99,29 @@ public abstract class DataShardingBase {
         this.updateTimes = System.currentTimeMillis();
         this.insertTimes = 0L;
     }
-    
+
+    public String getInsertStatement() {
+        return insertStatement;
+    }
+
+    public void setInsertStatement(String insertStatement) {
+        this.insertStatement = insertStatement;
+    }
+
+    public String getUpdateStatement() {
+        return updateStatement;
+    }
+
+    public void setUpdateStatement(String updateStatement) {
+        this.updateStatement = updateStatement;
+    }
+
+    public String getDeleteStatement() {
+        return deleteStatement;
+    }
+
+    public void setDeleteStatement(String deleteStatement) {
+        this.deleteStatement = deleteStatement;
+    }
+
 }
