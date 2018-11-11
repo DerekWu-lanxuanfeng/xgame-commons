@@ -47,7 +47,7 @@ public final class LongIDGen {
 	 * 前5个十进制位表示服务器标识 随后5个十进制位表示服务器启动值 后面10个十进制位用于本次ID自增.
      * 格式：92233 7203685 4775807
      *     32767 0000000 0000000
-	 * @param uniqueFlag  服务器唯一标识, 5个十进制位, 最大值65535 
+	 * @param uniqueFlag  服务器唯一标识, 5个十进制位, 最大值32767
 	 * @param autoID  自动ID,每次启动服务器后 或者 接近这个值的时候自增一个
 	 * @param oneLongIDReset 重设的时候需要的接口
 	 * @return 是否成功
@@ -62,18 +62,26 @@ public final class LongIDGen {
         	}
         	value = new AtomicLong(initialValue);
         	//设置重设阀值 
-        	if (isTest) {
-        		resetValue = initialValue + 5L;
-                maxValue = initialValue   + 10L;
-        	} else {
-        		resetValue = initialValue + 9900000L;
-            	maxValue = initialValue   + 9999999L;
-        	}
-            isInit = true;
+			resetValue(initialValue);
+			isInit = true;
             printInfo(true, uniqueFlag, autoID);
             return true;
         }    
         return false;
+	}
+
+	/**
+	 * 重设阀值
+	 * @param initialValue
+	 */
+	private static void resetValue(long initialValue) {
+		if (isTest) {
+            resetValue = initialValue + 5L;
+            maxValue = initialValue   + 10L;
+        } else {
+            resetValue = initialValue + 9699999L; // 再重设ID值期间预留30W条数据供使用
+            maxValue = initialValue   + 9999999L;
+        }
 	}
 
 	/**
@@ -87,16 +95,10 @@ public final class LongIDGen {
 	private static synchronized boolean reset(short uniqueFlag, int autoID) {
     	if (isInReset) {
     		long initialValue = (uniqueFlag * 100000000000000L) + (autoID * 10000000L);
-        	value.set(initialValue); 
-        	//设置重设阀值 
-        	if (isTest) {
-        		resetValue = initialValue + 5L;
-                maxValue = initialValue   + 10L;
-        	} else {
-        		resetValue = initialValue + 9900000L;
-            	maxValue = initialValue   + 9999999L;
-        	}
-            //退出重设
+			//设置重设阀值
+			resetValue(initialValue);
+			value.set(initialValue);
+			//退出重设
             isInReset = false;
             printInfo(false, uniqueFlag, autoID);
             return true;
@@ -111,10 +113,10 @@ public final class LongIDGen {
     	} else {
     		sb.append("# LongIDGen reset ");
     	}
-    	sb.append(" serverId=").append(uniqueFlag);
-    	sb.append(" autoID=").append(autoID);
-    	sb.append(" resetValue=").append(resetValue);
-    	sb.append(" maxValue=").append(maxValue);
+    	sb.append(" serverId = ").append(uniqueFlag);
+    	sb.append(" autoID = ").append(autoID);
+    	sb.append(" resetValue = ").append(resetValue);
+    	sb.append(" maxValue = ").append(maxValue);
     	LOG.info(sb.toString()); 
     }
 
@@ -126,13 +128,13 @@ public final class LongIDGen {
     public static long gen() {
         long newId = value.incrementAndGet();
         if (newId >= resetValue) {
-        	LOG.debug("# newId="+newId); 
+        	// LOG.debug("# newId="+newId);
         	if (!isInReset) {
         		startReset();
         	}
-        	if (newId >= maxValue) {
-        		throw new GameException("# LongIDGen.gen newId:"+newId+" >= maxValue:"+maxValue);
-        	}
+//        	if (newId >= maxValue) {
+//        		throw new GameException("# LongIDGen.gen newId:"+newId+" >= maxValue:"+maxValue);
+//        	}
         }
         return newId;
     }

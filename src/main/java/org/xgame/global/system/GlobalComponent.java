@@ -45,13 +45,13 @@ public class GlobalComponent {
         }
     }
 
-    public synchronized void stop() {
+    public synchronized void stopping() {
         if (this.isRunning()) {
             this.systemState = SystemStateEnum.STOPPING;
             this.stoppingTimes = System.currentTimeMillis();
-            LOG.info("########### GlobalComponent.stop() SUCCESS #########");
+            LOG.info("########### GlobalComponent.stopping() START #########");
         } else {
-            LOG.error("########### GlobalComponent.stop() ERROR #########");
+            LOG.error("########### GlobalComponent.stopping() ERROR #########");
         }
     }
 

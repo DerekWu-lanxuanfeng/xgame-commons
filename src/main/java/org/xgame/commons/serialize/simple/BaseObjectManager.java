@@ -11,12 +11,10 @@ import java.util.Map;
  */
 public class BaseObjectManager {
 
-    private static Map<Class, IBaseObjectInstance> map = new HashMap<>();
+    private static HashMap<Class, IBaseObjectInstance> map = new HashMap<>();
 
     public static <T extends IBaseObject> void register(Class<T> clazz, IBaseObjectInstance baseObjectInstance) {
-        if (map.get(clazz) == null) {
-            map.put(clazz, baseObjectInstance);
-        }
+        map.putIfAbsent(clazz, baseObjectInstance);
     }
 
     public static <T extends IBaseObject> T instance(Class<T> clazz) {

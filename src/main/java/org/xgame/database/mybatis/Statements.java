@@ -12,6 +12,7 @@ public class Statements {
     private String updateStatement; 
     private String deleteStatement;
     private String selectOneStatement;
+    private String selectListStatement;
 
     private Statements(String namespace, Class t) {
         String className = t.getSimpleName();
@@ -19,6 +20,7 @@ public class Statements {
         this.updateStatement = (namespace + ".update" + className);
         this.deleteStatement = (namespace + ".delete" + className + "ById");
         this.selectOneStatement = (namespace + ".selectOne" + className + "ById");
+        this.selectListStatement = (namespace + ".select" + className + "ListByParams");
     }
 
     public static Statements instance(Class t) {
@@ -59,5 +61,13 @@ public class Statements {
 
     public void setSelectOneStatement(String selectOneStatement) {
         this.selectOneStatement = selectOneStatement;
+    }
+
+    public String getSelectListStatement() {
+        return selectListStatement;
+    }
+
+    public void setSelectListStatement(String selectListStatement) {
+        this.selectListStatement = selectListStatement;
     }
 }

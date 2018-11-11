@@ -62,7 +62,7 @@ public class DateUtil {
     static {
         DATE_DEF_FORMAT = new SimpleDateFormat("yyyyMMdd");
         TIME_DEF_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-        Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"));
         c.set(1970, 0, 1, 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
         DEF_DATE = c.getTime();
@@ -666,6 +666,16 @@ public class DateUtil {
                 c.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
+    }
+
+    /**
+     * 格式化数字日期
+     * @return 格式：20181105
+     */
+    public static int formatIntDay(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String formatStr = formatter.format(date);
+        return Integer.parseInt(formatStr);
     }
 
     /**
@@ -1324,6 +1334,18 @@ public class DateUtil {
         caled.set(java.util.Calendar.SECOND, 0);
         caled.set(Calendar.MILLISECOND, 0);
         return caled.getTime();
+    }
+
+    /**
+     * 设置相同的时间
+     * @param calendar1
+     * @param calendar2
+     */
+    public static final void setTheSameInDayTimes(Calendar calendar1, Calendar calendar2) {
+        calendar1.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+        calendar1.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+        calendar1.set(Calendar.SECOND, calendar2.get(Calendar.SECOND));
+        calendar1.set(Calendar.MILLISECOND, calendar2.get(Calendar.MILLISECOND));
     }
 
     /**

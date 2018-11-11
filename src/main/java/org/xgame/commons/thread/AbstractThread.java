@@ -16,28 +16,28 @@ public abstract class AbstractThread<T> implements Runnable {
     private final Logger LOG = LogManager.getLogger(getClass());
 
     protected final String threadName;
-    protected volatile boolean bShutDown;
+    protected volatile boolean shutDown;
     private Thread thread;
-    private final boolean isDaemon;
+    private final boolean daemon;
 
     private AtomicLong countNum = new AtomicLong(0);
 
     protected AbstractThread(String threadName) {
         this.threadName = threadName;
-        this.bShutDown = false;
+        this.shutDown = false;
         this.thread = null;
-        this.isDaemon = false;
+        this.daemon = false;
     }
 
     protected AbstractThread(String threadName, boolean isDaemon) {
         this.threadName = threadName;
-        this.bShutDown = false;
+        this.shutDown = false;
         this.thread = null;
-        this.isDaemon = isDaemon;
+        this.daemon = isDaemon;
     }
 
     public synchronized void shutdown() {
-        this.bShutDown = true;
+        this.shutDown = true;
         if (this.thread == null) {
             throw new Error("Thread not exsit! ");
         }
@@ -49,11 +49,23 @@ public abstract class AbstractThread<T> implements Runnable {
             throw new Error("Thread is run!");
         }
         this.thread = new Thread(this, this.threadName);
-        if (this.isDaemon) { //是否守护进程
+        if (this.daemon) { //是否守护进程
             this.thread.setDaemon(true);
         }
         this.thread.start();
         LOG.info(this.threadName + " thread started...");
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public boolean isShutDown() {
+        return shutDown;
+    }
+
+    public boolean isDaemon() {
+        return daemon;
     }
 
     public long incrCountNum() {

@@ -17,11 +17,15 @@ public interface IMultiDataSourceBaseDAO {
 
     int update(DataShardingBase dataShardingBase);
 
+    // int update(DataShardingBase dataShardingBase, String statement);
+
     int update(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap);
 
     int delete(DataShardingBase dataShardingBase);
 
     int delete(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap);
+
+    <T extends DataShardingBase> void batchDump(Short dbNum, List<T> dataShardingBaseList);
 
     <T extends DataShardingBase> void batchDump(Short dbNum, List<T> dataShardingBaseList, DumpStat dumpStat);
 
@@ -32,6 +36,10 @@ public interface IMultiDataSourceBaseDAO {
     <T extends DataShardingBase> T selectOne(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<T> paramClass);
 
     <T> T selectObj(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<T> paramClass);
+
+    <T> T selectObjByCustom(Short dbNum, String statement, Object paramObj, Class<T> paramClass);
+
+    <E extends DataShardingBase> List<E> selectList(Short dbNum, Short tableNum, Map<String, Object> paramMap, Class<E> paramClass);
 
     <E extends DataShardingBase> List<E> selectList(Short dbNum, Short tableNum, String statement, Map<String, Object> paramMap, Class<E> paramClass);
 
